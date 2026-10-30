@@ -24,4 +24,15 @@ await page.getByRole('button', { name: 'Login' }).click();
 // [Assert] 에러 영역에 'locked out' 문구가 포함되어 있는지 확인
 await expect(page.locator('[data-test="error"]')).toContainText('locked out');
 });
+test('TC-LOGIN-003 아이디 미입력 시 Username is required 에러가 표시된다', async ({ page }) => {
+  // [Arrange]
+  await page.goto('https://www.saucedemo.com/');
+  // [Act] 아이디는 비우고 비밀번호만 입력
+  await page.getByPlaceholder('Username').fill('');
+  await page.getByPlaceholder('Password').fill('secret_sauce');
+  await page.getByRole('button', { name: 'Login' }).click();
+  // [Assert] 아이디 필수 에러가 표시되고, 로그인되지 않음
+  await expect(page.locator('[data-test="error"]')).toContainText('Username is required');
+  await expect(page).not.toHaveURL(/inventory/);
+});
 });
